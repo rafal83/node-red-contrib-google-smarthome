@@ -202,6 +202,188 @@ module.exports = function(RED) {
             done();
         });
     }
-
     RED.nodes.registerType("google-window", WindowNode);
+    /******************************************************************************************************************
+	 * 
+	 *
+	 */    
+    function BlindsNode(config) {
+        RED.nodes.createNode(this, config);
+
+        this.client     = config.client;
+        this.clientConn = RED.nodes.getNode(this.client);
+        this.topicOut   = config.topic;
+        this.passthru   = config.passthru;
+        this.topicDelim = '/';
+
+        if (!this.clientConn) {
+            this.error(RED._("blinds.errors.missing-config"));
+            this.status({fill:"red", shape:"dot", text:"Missing config"});
+            return;
+        } else if (typeof this.clientConn.register !== 'function') {
+            this.error(RED._("blinds.errors.missing-bridge"));
+            this.status({fill:"red", shape:"dot", text:"Missing SmartHome"});
+            return;            
+        }
+
+        let node = this;
+
+        RED.log.debug("BlindsNode(): node.topicOut = " + node.topicOut);
+
+        /******************************************************************************************************************
+         * called when state is updated from Google Assistant
+         *
+         */
+        this.updated = function(states) {   // this must be defined before the call to clientConn.register()
+            RED.log.debug("BlindsNode(updated): states = " + JSON.stringify(states));
+
+            if (states.openPercent == 0) {
+                node.status({fill:"green", shape:"dot", text:"CLOSED"});
+            } else {
+                node.status({fill:"red", shape:"dot", text:"OPEN"});
+            }
+
+            let msg = {
+                topic: node.topicOut,
+                payload: states
+            };
+
+            node.send(msg);
+        };
+
+        this.states = this.clientConn.register(this, 'blinds', config.name);
+
+        this.status({fill:"yellow", shape:"dot", text:"Ready"});
+
+        /******************************************************************************************************************
+         * respond to inputs from NodeRED
+         *
+         */
+        this.on('input', function (msg) {
+            RED.log.debug("BlindsNode(input)");
+
+            let topicArr = msg.topic.split(node.topicDelim);
+            let topic    = topicArr[topicArr.length - 1];   // get last part of topic
+
+            RED.log.debug("BlindsNode(input): topic = " + topic);
+
+            try {
+                if (topic.toUpperCase() === 'SET') {
+                    /*RED.log.debug("BlindsNode(input): SET");
+                    let object = {};
+
+                    if (typeof msg.payload === 'object') {
+                        object = msg.payload;
+                    } else {
+                        RED.log.debug("BlindsNode(input): typeof payload = " + typeof msg.payload);
+                        return;
+                    }
+
+                    let on     = node.states.on;
+                    let online = node.states.online;
+
+                    // on
+                    if (object.hasOwnProperty('on')) {
+                        on = formats.FormatValue(formats.Formats.BOOL, 'on', object.on);
+                    }
+
+                    // online
+                    if (object.hasOwnProperty('online')) {
+                        online = formats.FormatValue(formats.Formats.BOOL, 'online', object.online);
+                    }
+
+                    if (node.states.on !== on || node.states.online !== online){
+                        node.states.on     = on;
+                        node.states.online = online;
+
+                        node.clientConn.setState(node, node.states);  // tell Google ...
+
+                        if (node.passthru) {
+                            msg.payload = node.states;
+                            node.send(msg);
+                        }
+                    }*/
+                } else if (topic.toUpperCase() === 'OPENPERCENT') {
+                    RED.log.debug("BlindsNode(input): OPEN/OPENPERCENT");
+                    let openPercent = formats.FormatValue(formats.Formats.INT, 'openPercent', msg.payload);
+
+                    if (node.states.openPercent !== openPercent) {
+                        node.states.openPercent = openPercent;
+
+                        node.clientConn.setState(node, node.states);  // tell Google ...
+
+                        if (node.passthru) {
+                            msg.payload = node.states.openPercent;
+                            node.send(msg);
+                        }
+                    }
+                } else if (topic.toUpperCase() === 'ONLINE') {
+                    RED.log.debug("BlindsNode(input): ONLINE");
+                    let online = formats.FormatValue(formats.Formats.BOOL, 'online', msg.payload);
+
+                    if (node.states.online !== online) {
+                        node.states.online = online;
+
+                        node.clientConn.setState(node, node.states);  // tell Google ...
+
+                        if (node.passthru) {
+                            msg.payload = node.states.online;
+                            node.send(msg);
+                        }
+                    }
+                } else {
+                    RED.log.debug("BlindsNode(input): some other topic");
+                    let object = {};
+
+                    if (typeof msg.payload === 'object') {
+                        object = msg.payload;
+                    } else {
+                        RED.log.debug("BlindsNode(input): typeof payload = " + typeof msg.payload);
+                        return;
+                    }
+
+                    let openPercent     = node.states.openPercent;
+                    let online = node.states.online;
+
+                    // openPercent
+                    if (object.hasOwnProperty('openPercent')) {
+                        openPercent = formats.FormatValue(formats.Formats.INT, 'openPercent', object.openPercent);
+                    }
+
+                    // online
+                    if (object.hasOwnProperty('online')) {
+                        online = formats.FormatValue(formats.Formats.BOOL, 'online', object.online);
+                    }
+
+                    if (node.states.openPercent !== openPercent || node.states.online !== online){
+                        node.states.openPercent     = openPercent;
+                        node.states.online = online;
+
+                        node.clientConn.setState(node, node.states);  // tell Google ...
+
+                        if (node.passthru) {
+                            msg.payload = node.states;
+                            node.send(msg);
+                        }
+                    }
+                }
+            } catch (err) {
+                RED.log.error(err);
+            }
+        });
+
+        this.on('close', function(removed, done) {
+            if (removed) {
+                // this node has been deleted
+                node.clientConn.remove(node, 'blinds');
+            } else {
+                // this node is being restarted
+                node.clientConn.deregister(node, 'blinds');
+            }
+            
+            done();
+        });
+    }
+
+    RED.nodes.registerType("google-blinds", BlindsNode);
 }

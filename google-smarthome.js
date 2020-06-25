@@ -103,7 +103,11 @@ module.exports = function(RED) {
                     states = node.app.NewWindow(client, name);
                     break;
 
-   		        case 'vacuum':
+                case 'blinds':
+                    states = node.app.NewBlinds(client, name);
+                    break;
+
+                case 'vacuum':
                     states = node.app.NewVacuum(client, name, param1);
                     break;
 					
