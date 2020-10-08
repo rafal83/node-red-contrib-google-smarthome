@@ -1,6 +1,6 @@
 <!--
  NodeRED Google SmartHome
- Copyright (C) 2018 Michael Jacobsen.
+ Copyright (C) 2020 Michael Jacobsen.
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -126,7 +126,7 @@
         </dl>
     
     <h3>References</h3>
-        <p><a href="https://developers.google.com/actions/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
         <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
 </script>
 
@@ -288,7 +288,7 @@
         </dl>
     
     <h3>References</h3>
-        <p><a href="https://developers.google.com/actions/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
         <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
 </script>
 
@@ -477,7 +477,7 @@
         </dl>
 
     <h3>References</h3>
-        <p><a href="https://developers.google.com/actions/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
         <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
 </script>
 
@@ -552,6 +552,7 @@
         <code>[...]/brightness</code> Integer, 0 - 100<br>
         <code>[...]/hue</code> Float, 0.0 - 360.0<br>
         <code>[...]/saturation</code> Float, 0.0 - 100.0<br>
+        <code>[...]/value</code> Float, 0.0 - 100.0<br>
         <br/>
         <b>Outputs</b><br/>
         <code>updated</code><br>
@@ -610,6 +611,14 @@
             <dd>Hue for the light. Range is 0.0 - 100.0.</dd>
         </dl>
 
+        <p>If <code>msg.topic</code> is <code>value</code> then <code>msg.payload</code> must be a float and tells the value of the light.</p>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">float</span>
+            </dt>
+            <dd>Value for the light. Range is 0.0 - 100.0.</dd>
+        </dl>
+
         <p>If <code>msg.topic</code> is <code>on</code> then <code>msg.payload</code> must be boolean and tells the state of the light.</p>
         <dl class="message-properties">
             <dt>payload
@@ -640,6 +649,10 @@
                 <span class="property-type">float</span>
             </dt>
             <dd>Saturation for the light. Range is 0.0 - 100.0.</dd>
+            <dt>payload.value
+                <span class="property-type">float</span>
+            </dt>
+            <dd>Value for the light. Range is 0.0 - 100.0.</dd>
             <dt>payload.on
                 <span class="property-type">boolean</span>
             </dt>
@@ -675,7 +688,7 @@
         </dl>
 
     <h3>References</h3>
-        <p><a href="https://developers.google.com/actions/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
         <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
 </script>
 
@@ -860,7 +873,7 @@
         </dl>
 
     <h3>References</h3>
-        <p><a href="https://developers.google.com/actions/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
+        <p><a href="https://developers.google.com/assistant/smarthome/guides/light" target="_new">Smart Home Light Guide</a>.</p>
         <p><a href="https://www.npmjs.com/package/node-red-contrib-google-smarthome" target="_new">Node Information</a>.</p>
 </script>
 

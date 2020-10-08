@@ -1,6 +1,6 @@
 /**
  * NodeRED Google SmartHome
- * Copyright (C) 2018 Michael Jacobsen.
+ * Copyright (C) 2020 Michael Jacobsen.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             RED.log.debug("SceneNode(input)");
 
-            let topicArr = msg.topic.split(node.topicDelim);
+            let topicArr = String(msg.topic).split(node.topicDelim);
             let topic    = topicArr[topicArr.length - 1];   // get last part of topic
 
             RED.log.debug("SceneNode(input): topic = " + topic);

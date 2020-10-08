@@ -4,6 +4,9 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
+            "accesstokenduration": "Access Token Duration (m)",
+            "usehttpnoderoot": "Use http Node-RED root path",
+            "httppath": "Path",
             "port": "Port",
             "clientid": "Client ID",
             "clientsecret": "Client Secret",
@@ -21,6 +24,8 @@
             "publickey": "Filename",
             "privatekey": "Filename",
             "jwtkey": "Filename",
+            "accesstokenduration": "Interval in minutes",
+            "port": "Server port. -1 or empty for the Node-RED port",
             "reportinterval": "Interval in minutes. -1 to disable"
         },
         "state": {
