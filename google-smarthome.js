@@ -1,6 +1,6 @@
 /**
  * NodeRED Google SmartHome
- * Copyright (C) 2020 Michael Jacobsen.
+ * Copyright (C) 2018 Michael Jacobsen.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  *
  * https://github.com/actions-on-google/smart-home-nodejs
  * 
- * https://developers.google.com/assistant/smarthome/
+ * https://developers.google.com/actions/smarthome/
 */
 
 module.exports = function(RED) {
@@ -43,13 +43,9 @@ module.exports = function(RED) {
         this.app = new GoogleSmartHome(
             config.id,
             RED.settings.userDir,
-            RED.settings.httpNodeRoot,
             config.username,
             config.password,
-            parseInt(config.accesstokenduration), // minutes
-            config.usehttpnoderoot,
-            config.httppath,
-            parseInt(config.port || '0'),
+            parseInt(config.port),
             config.ssloffload,
             config.publickey, 
             config.privatekey,
@@ -59,7 +55,7 @@ module.exports = function(RED) {
             config.reportinterval,     // minutes
             config.enabledebug);
 
-        let err = this.app.Start(RED.httpNode || RED.httpAdmin);
+        let err = this.app.Start();
         if (err !== true) {
             RED.log.error(err);
             return;
