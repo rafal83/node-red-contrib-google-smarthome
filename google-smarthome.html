@@ -1,6 +1,6 @@
 <!--
  NodeRED Google SmartHome
- Copyright (C) 2020 Michael Jacobsen.
+ Copyright (C) 2018 Michael Jacobsen.
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -42,11 +42,6 @@
     </div>
 
     <div class="form-row">
-        <label for="node-config-input-accesstokenduration"><i class="fa fa-globe"></i> <span data-i18n="googlesmarthome.label.accesstokenduration"></span></label>
-        <input type="text" id="node-config-input-accesstokenduration" data-i18n="[placeholder]googlesmarthome.placeholder.accesstokenduration">
-    </div>
-
-    <div class="form-row">
         <b>Actions on Google Project Settings</b>
     </div>
 
@@ -75,51 +70,33 @@
     </div>
 
     <div class="form-row">
-        <b>Web Server Settings</b>
+        <b>Built-in Web Server Settings</b>
     </div>
 
     <div class="form-row">
         <label for="node-config-input-port"><i class="fa fa-globe"></i> <span data-i18n="googlesmarthome.label.port"></span></label>
-        <input type="text" id="node-config-input-port" data-i18n="[placeholder]googlesmarthome.placeholder.port">
+        <input type="text" id="node-config-input-port" 3001>
     </div>
 
     <div class="form-row">
-        <label for="node-config-input-httppath"><i class="fa fa-folder"></i> <span data-i18n="googlesmarthome.label.httppath"></span></label>
-        <input type="text" id="node-config-input-httppath">
+        <label style="width:auto" for="node-config-input-ssloffload"><i class="fa fa-arrow-right"></i> <span data-i18n="googlesmarthome.label.ssloffload"></span></label>
+        <input type="checkbox" id="node-config-input-ssloffload" style="display:inline-block; width:auto; vertical-align:top;">
     </div>
 
-    <div class="form-row hidden" id="connectioninfo" style="background: #fbfbfb">
+    <div class="form-row">
+        <label for="node-config-input-publickey"><i class="fa fa-folder"></i> <span data-i18n="googlesmarthome.label.publickey"></span></label>
+        <input type="text" id="node-config-input-publickey">
+    </div>
 
-        <div class="form-row">
-            <label style="width:auto" for="node-config-input-usehttpnoderoot"><i class="fa fa-arrow-right"></i> <span data-i18n="googlesmarthome.label.usehttpnoderoot"></span></label>
-            <input type="checkbox" id="node-config-input-usehttpnoderoot" style="display:inline-block; width:auto; vertical-align:top;">
-        </div>
-    
-    
-        <div class="form-row">
-            <label style="width:auto" for="node-config-input-ssloffload"><i class="fa fa-arrow-right"></i> <span data-i18n="googlesmarthome.label.ssloffload"></span></label>
-            <input type="checkbox" id="node-config-input-ssloffload" style="display:inline-block; width:auto; vertical-align:top;">
-        </div>
-
-        <div class="form-row hidden" id="ssloffloadkeys" style="background: #fbfbfb">
-
-            <div class="form-row">
-                <label for="node-config-input-publickey"><i class="fa fa-folder"></i> <span data-i18n="googlesmarthome.label.publickey"></span></label>
-                <input type="text" id="node-config-input-publickey">
-            </div>
-
-            <div class="form-row">
-                <label for="node-config-input-privatekey"><i class="fa fa-folder"></i> <span data-i18n="googlesmarthome.label.privatekey"></span></label>
-                <input type="text" id="node-config-input-privatekey">
-            </div>
-        </div>
+    <div class="form-row">
+        <label for="node-config-input-privatekey"><i class="fa fa-folder"></i> <span data-i18n="googlesmarthome.label.privatekey"></span></label>
+        <input type="text" id="node-config-input-privatekey">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="googlesmarthome-client">
     <b>Local Authentication</b><br>
     <code>Username</code> and <code>Password</code>: A username and password used when you link Google SmartHome to this node.<br>
-    <code>Access Token Duration</code>: The authorization token duration (in minutes) used by Google SmartHome to identify itself to node-red SmartHome plugin. Defaults is 60 minutes.<br>
     <br>
     <b>Actions on Google Project Settings</b><br>
     <code>Client ID</code>: The client id you entered in the <b>Google on Actions</b> project.<br>
@@ -129,9 +106,7 @@
     <code>Jwt Key</code>: Full path to JWT key file.<br>
     <code>Report Interval (m)</code>: Time, in minutes, between report updates are sent to Google.<br>
     <br>
-    <b>Web Server Settings</b><br>
-    <code>Use http Node-RED root path</code>: If enabled, use the same http root path prefix configured for Node-RED, otherwise use /.<br>
-    <code>Path</code>: The path prefix to use for the requests. Default is /smarthome.<br>
+    <b>Built-in Web Server Settings</b><br>
     <code>Port</code>: TCP port of your choosing for incoming connections from Google. Must match what you entered in the <b>Google on Actions</b> project.<br>
     <code>External SSL offload</code>: If enabled, SSL encryption is not used by the node and must be done elsewhere.
     <code>Public Key</code>: Full path to public key file, e.g. `fullchain.pem` from Let's Encrypt.<br>
@@ -154,14 +129,8 @@
             password: {
                 value:"", required:true
             },
-            usehttpnoderoot : {
-                value: false
-            },
             port: {
-                value:3001, required:false, validate:RED.validators.number(true)
-            },
-            httppath: {
-                value:"", required: false
+                value:3001, required:true, validate:RED.validators.number(true)
             },
             ssloffload: {
                 value: false
@@ -174,9 +143,6 @@
             },
             jwtkey: {
                 value:"", required:true
-            },
-            accesstokenduration: {
-                value:60, required:true, validate:RED.validators.number(true)
             },
             reportinterval: {
                 value:60, required:true, validate:RED.validators.number(true)
@@ -195,34 +161,6 @@
         },
         labelStyle: function() {
             return this.name ? "node_label_italic" : "";
-        },
-        oneditprepare: function() {
-
-            // Use external SSL offload on / off
-            var sslOffLoadKeys = function() {
-                var mode = $("#node-config-input-ssloffload").prop('checked');
-                if (mode == false) {
-                    $("#ssloffloadkeys").show();
-                } else {
-                    $("#ssloffloadkeys").hide();
-                }
-            };
-            sslOffLoadKeys();
-            $("#node-config-input-ssloffload").change(sslOffLoadKeys);
-
-            // Use same NODE-Red port
-            var useNODERedPort = function() {
-                var mode = $('#node-config-input-port').val();
-                var mode = isNaN(mode) ? 0 : +mode;
-                if ((mode <= 0)) { //  || (RED.settings.uiPort === node)) {
-                    $('#connectioninfo').hide();
-                } else {
-                    $('#connectioninfo').show();
-                }
-            };
-            useNODERedPort();
-            $('#node-config-input-port').change(useNODERedPort);
- 
         }
     });
 </script>
@@ -335,4 +273,3 @@
         }
     })
 </script>
-
